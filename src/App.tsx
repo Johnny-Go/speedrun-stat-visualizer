@@ -1,7 +1,7 @@
 import React from "react";
 import logo from "./logo.svg";
 import "./App.css";
-import Button from "@material-ui/core/Button";
+import { FileImportButton } from "./Component/FileImportButton";
 
 const App = () => {
   return (
@@ -19,9 +19,11 @@ const App = () => {
         >
           Learn React
         </a>
-        <Button variant="contained" color="primary">
-          Hello World
-        </Button>
+        <FileImportButton
+          id="import-split-button"
+          buttonText="Import LiveSplit file"
+          fileType=".lss"
+        />
       </header>
     </div>
   );

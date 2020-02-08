@@ -1,7 +1,7 @@
-import React from "react";
-import logo from "./logo.svg";
-import "./App.css";
-import { FileImportButton } from "./Components/FileImportButton";
+import React from 'react'
+import logo from './logo.svg'
+import './App.css'
+import { FileImportButton } from "./Components/FileImportButton"
 
 const App = () => {
   function handleFile() {
@@ -28,7 +28,7 @@ const App = () => {
         </FileImportButton>
       </header>
     </div>
-  );
-};
+  )
+}
 
-export default App;
+export default App

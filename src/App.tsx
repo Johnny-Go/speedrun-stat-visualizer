@@ -4,6 +4,10 @@ import "./App.css";
 import { FileImportButton } from "./Component/FileImportButton";
 
 const App = () => {
+  function handleFile() {
+    console.log("test");
+  }
+
   return (
     <div className="App">
       <header className="App-header">
@@ -19,11 +23,9 @@ const App = () => {
         >
           Learn React
         </a>
-        <FileImportButton
-          id="import-split-button"
-          buttonText="Import LiveSplit file"
-          fileType=".lss"
-        />
+        <FileImportButton id="import-split-button" accept=".lss" onChange={handleFile}>
+          Import LiveSplit File
+        </FileImportButton>
       </header>
     </div>
   );

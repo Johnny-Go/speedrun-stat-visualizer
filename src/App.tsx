@@ -1,7 +1,7 @@
-import React from "react";
-import logo from "./logo.svg";
-import "./App.css";
-import Button from "@material-ui/core/Button";
+import React from 'react'
+import logo from './logo.svg'
+import './App.css'
+import Button from '@material-ui/core/Button'
 
 const App = () => {
   return (
@@ -24,7 +24,7 @@ const App = () => {
         </Button>
       </header>
     </div>
-  );
-};
+  )
+}
 
-export default App;
+export default App

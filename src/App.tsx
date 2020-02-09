@@ -1,7 +1,7 @@
 import React from 'react'
 import logo from './logo.svg'
 import './App.css'
-import { FileImportButton } from './Components/FileImportButton'
+import FileImportButton from './Components/FileImportButton'
 
 const App = () => {
   function handleFile() {

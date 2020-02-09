@@ -3,18 +3,26 @@ import Button from '@material-ui/core/Button'
 
 type FileImportButtonProps = {
   id: string
-  accept: string
   children: React.ReactNode
+  accept: string
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void
 }
 
-export const FileImportButton = ({ id, accept, children, onChange }: FileImportButtonProps) => (
+const FileImportButton = (props: FileImportButtonProps) => (
   <React.Fragment>
-    <input id={id} accept={accept} onChange={onChange} style={{ display: 'none' }} type="file" />
-    <label htmlFor={id}>
-      <Button color="primary" component="span" variant="contained">
-        {children}
+    <input
+      accept={props.accept}
+      id={props.id}
+      style={{ display: 'none' }}
+      type="file"
+      onChange={props.onChange}
+    />
+    <label htmlFor={props.id}>
+      <Button component="span" variant="contained" color="primary">
+        {props.children}
       </Button>
     </label>
   </React.Fragment>
 )
+
+export default FileImportButton

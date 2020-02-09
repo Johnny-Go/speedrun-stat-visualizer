@@ -6,6 +6,8 @@ In the project directory, you can run:
 
 ### `npm start`
 
+Note: this has been augmented from the CRA default to also run `firebase serve` and as such will proxy firebase sdk requests and firebase functions to localhost:4000
+
 Runs the app in the development mode.<br />
 Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 

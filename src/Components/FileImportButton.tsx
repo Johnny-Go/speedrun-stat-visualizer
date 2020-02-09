@@ -8,18 +8,12 @@ type FileImportButtonProps = {
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void
 }
 
-const FileImportButton = (props: FileImportButtonProps) => (
+const FileImportButton = ({ id, children, accept, onChange }: FileImportButtonProps) => (
   <React.Fragment>
-    <input
-      accept={props.accept}
-      id={props.id}
-      style={{ display: 'none' }}
-      type="file"
-      onChange={props.onChange}
-    />
-    <label htmlFor={props.id}>
+    <input accept={accept} id={id} style={{ display: 'none' }} type="file" onChange={onChange} />
+    <label htmlFor={id}>
       <Button component="span" variant="contained" color="primary">
-        {props.children}
+        {children}
       </Button>
     </label>
   </React.Fragment>

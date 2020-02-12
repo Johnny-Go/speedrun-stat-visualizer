@@ -2,10 +2,54 @@ import React from 'react'
 import logo from './logo.svg'
 import './App.css'
 import FileImportButton from './Components/FileImportButton'
+import TextField from '@material-ui/core/TextField'
+import xml2js from 'xml2js'
+import Attempt from './types'
 
 const App = () => {
-  function handleFile() {
-    console.log('test')
+  const [attemptHistory, setAttemptHistory] = React.useState<Attempt[]>([])
+
+  function handleFile(e: React.ChangeEvent<HTMLInputElement>) {
+    if (e && e.target && e.target.files && e.target.files[0]) {
+      const file = e.target.files[0]
+
+      let reader = new FileReader()
+      reader.onload = () => {
+        const xml = reader.result?.toString()
+
+        if (xml) {
+          xml2js.parseString(xml, { trim: true }, async function(err, result) {
+            //todo: display error nicely in UI
+            if (err) {
+              console.log(err)
+            }
+
+            await getAttemptHistory(result)
+          })
+        }
+      }
+      reader.readAsText(file)
+    }
+  }
+
+  async function getAttemptHistory(xml: any) {
+    let atmptHistory: Attempt[] = []
+
+    if (
+      xml &&
+      xml.Run &&
+      xml.Run.AttemptHistory &&
+      xml.Run.AttemptHistory[0] &&
+      xml.Run.AttemptHistory[0].Attempt
+    ) {
+      xml.Run.AttemptHistory[0].Attempt.forEach((attempt: any) => {
+        if (attempt && attempt.RealTime && attempt.RealTime[0]) {
+          atmptHistory.push({ x: attempt.$.id, y: attempt.RealTime[0] })
+        }
+      })
+    }
+
+    setAttemptHistory(atmptHistory)
   }
 
   return (
@@ -26,6 +70,13 @@ const App = () => {
         <FileImportButton id="import-split-button" accept=".lss" onChange={handleFile}>
           Import LiveSplit File
         </FileImportButton>
+        <br />
+        <TextField
+          multiline
+          value={attemptHistory.map((a: Attempt) => `x:${a.x}, y:${a.y}`).join('\n')}
+          style={{ width: '75%' }}
+          variant="outlined"
+        />
       </header>
     </div>
   )

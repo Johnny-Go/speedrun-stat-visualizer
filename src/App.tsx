@@ -35,19 +35,11 @@ const App = () => {
   async function getAttemptHistory(xml: any) {
     let atmptHistory: Attempt[] = []
 
-    if (
-      xml &&
-      xml.Run &&
-      xml.Run.AttemptHistory &&
-      xml.Run.AttemptHistory[0] &&
-      xml.Run.AttemptHistory[0].Attempt
-    ) {
-      xml.Run.AttemptHistory[0].Attempt.forEach((attempt: any) => {
-        if (attempt && attempt.RealTime && attempt.RealTime[0]) {
-          atmptHistory.push({ x: attempt.$.id, y: attempt.RealTime[0] })
-        }
-      })
-    }
+    xml?.Run?.AttemptHistory?.[0]?.Attempt?.forEach((attempt: any) => {
+      if (attempt?.$?.id && attempt?.RealTime?.[0]) {
+        atmptHistory.push({ x: attempt.$.id, y: attempt.RealTime[0] })
+      }
+    })
 
     setAttemptHistory(atmptHistory)
   }

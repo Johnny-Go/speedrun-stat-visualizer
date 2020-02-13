@@ -10,10 +10,10 @@ const App = () => {
   const [attemptHistory, setAttemptHistory] = React.useState<Attempt[]>([])
 
   function handleFile(e: React.ChangeEvent<HTMLInputElement>) {
-    if (e && e.target && e.target.files && e.target.files[0]) {
+    if (e?.target?.files?.[0]) {
       const file = e.target.files[0]
 
-      let reader = new FileReader()
+      const reader = new FileReader()
       reader.onload = () => {
         const xml = reader.result?.toString()
 

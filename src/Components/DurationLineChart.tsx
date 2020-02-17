@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { ReactElement } from 'react'
 import { Attempt } from '../types'
 
 import {
@@ -103,12 +103,12 @@ type DurationLineChartProps = {
   yAxisLabel: string
 }
 
-const DurationLineChart = ({
+const DurationLineChart: React.FC<DurationLineChartProps> = ({
   chartTitle,
   data,
   xAxisLabel,
   yAxisLabel
-}: DurationLineChartProps) => {
+}): ReactElement => {
   //if there's no data return nothing
   if (!data || data.length <= 0) {
     return <React.Fragment></React.Fragment>

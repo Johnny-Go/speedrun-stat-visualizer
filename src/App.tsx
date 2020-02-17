@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { ReactElement } from 'react'
 import moment from 'moment'
 import logo from './logo.svg'
 import './App.css'
@@ -9,7 +9,7 @@ import xml2js from 'xml2js'
 import { Attempt } from './types'
 import DurationLineChart from './Components/DurationLineChart'
 
-const App = () => {
+const App: React.FC = (): ReactElement => {
   const [attemptHistory, setAttemptHistory] = React.useState<Attempt[]>([])
   const [errorMessage, setErrorMessage] = React.useState<string>()
 
@@ -28,7 +28,7 @@ const App = () => {
         xml2js
           .parseStringPromise(xml, { trim: true })
           .then(function(result: any) {
-            var history = parseAttemptHistoryFromFile(result)
+            const history = parseAttemptHistoryFromFile(result)
             setAttemptHistory(history)
           })
           .catch(function(err: string) {

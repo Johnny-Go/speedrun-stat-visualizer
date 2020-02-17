@@ -1,14 +1,18 @@
-import React from 'react'
+import React, { ReactElement } from 'react'
 import Button from '@material-ui/core/Button'
 
 type FileImportButtonProps = {
   id: string
-  children: React.ReactNode
   accept: string
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void
 }
 
-const FileImportButton = ({ id, children, accept, onChange }: FileImportButtonProps) => (
+const FileImportButton: React.FC<FileImportButtonProps> = ({
+  id,
+  children,
+  accept,
+  onChange
+}): ReactElement => (
   <React.Fragment>
     <input accept={accept} id={id} style={{ display: 'none' }} type="file" onChange={onChange} />
     <label htmlFor={id}>

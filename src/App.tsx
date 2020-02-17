@@ -1,47 +1,55 @@
 import React from 'react'
+import moment from 'moment'
 import logo from './logo.svg'
 import './App.css'
 import FileImportButton from './Components/FileImportButton'
 import TextField from '@material-ui/core/TextField'
+import Grid from '@material-ui/core/Grid'
 import xml2js from 'xml2js'
-import Attempt from './types'
+import { Attempt } from './types'
+import DurationLineChart from './Components/DurationLineChart'
 
 const App = () => {
   const [attemptHistory, setAttemptHistory] = React.useState<Attempt[]>([])
+  const [errorMessage, setErrorMessage] = React.useState<string>()
 
   function handleFile(e: React.ChangeEvent<HTMLInputElement>) {
-    if (e?.target?.files?.[0]) {
-      const file = e.target.files[0]
-
-      const reader = new FileReader()
-      reader.onload = () => {
-        const xml = reader.result?.toString()
-
-        if (xml) {
-          xml2js.parseString(xml, { trim: true }, async function(err, result) {
-            //todo: display error nicely in UI
-            if (err) {
-              console.log(err)
-            }
-
-            await getAttemptHistory(result)
-          })
-        }
-      }
-      reader.readAsText(file)
+    if (!e?.target?.files?.[0]) {
+      return null
     }
+
+    const file = e.target.files[0]
+
+    const reader = new FileReader()
+    reader.onload = () => {
+      const xml = reader.result?.toString()
+
+      if (xml) {
+        xml2js
+          .parseStringPromise(xml, { trim: true })
+          .then(function(result: any) {
+            var history = parseAttemptHistoryFromFile(result)
+            setAttemptHistory(history)
+          })
+          .catch(function(err: string) {
+            setErrorMessage(err)
+            return null
+          })
+      }
+    }
+    reader.readAsText(file)
   }
 
-  async function getAttemptHistory(xml: any) {
-    let atmptHistory: Attempt[] = []
-
-    xml?.Run?.AttemptHistory?.[0]?.Attempt?.forEach((attempt: any) => {
-      if (attempt?.$?.id && attempt?.RealTime?.[0]) {
-        atmptHistory.push({ x: attempt.$.id, y: attempt.RealTime[0] })
+  function parseAttemptHistoryFromFile(fileObject: any): Attempt[] {
+    const history: Attempt[] = fileObject?.Run?.AttemptHistory?.[0]?.Attempt?.flatMap(
+      ({ $, RealTime }: any) => {
+        return $?.id && RealTime?.[0]
+          ? { x: Number($.id), y: moment.duration(RealTime[0]).as('milliseconds') }
+          : []
       }
-    })
+    )
 
-    setAttemptHistory(atmptHistory)
+    return history
   }
 
   return (
@@ -63,10 +71,24 @@ const App = () => {
           Import LiveSplit File
         </FileImportButton>
         <br />
+        <TextField multiline style={{ width: '25%' }} value={errorMessage} variant="outlined" />
+        <br />
+        <Grid container>
+          <Grid item xs={4} style={{ border: '1px solid red' }} />
+          <Grid item xs={8} style={{ border: '1px solid red' }}>
+            <DurationLineChart
+              chartTitle="Run Duration over Time"
+              data={attemptHistory}
+              xAxisLabel="Attempt"
+              yAxisLabel="Run Duration"
+            />
+          </Grid>
+        </Grid>
+        <br />
         <TextField
           multiline
-          value={attemptHistory.map((a: Attempt) => `x:${a.x}, y:${a.y}`).join('\n')}
           style={{ width: '75%' }}
+          value={attemptHistory.map((a: Attempt) => `x:${a.x}, y:${a.y}`).join('\n')}
           variant="outlined"
         />
       </header>

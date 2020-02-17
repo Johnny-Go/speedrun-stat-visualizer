@@ -14,6 +14,7 @@ import {
 
 //component for rendering the vertical line on the line chart
 class Cursor extends React.Component<any> {
+  //todo: define props instead of using any
   render() {
     const { x, scale } = this.props
     const range = scale.y.range()

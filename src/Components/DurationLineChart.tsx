@@ -75,6 +75,10 @@ function findDomain(data: number[]): { min: number; max: number } {
     max = v > max ? v : max
   }
 
+  if (min === max) {
+    min = 0
+  }
+
   return { min, max }
 }
 
@@ -99,7 +103,7 @@ function getTimeTicks(min: number, max: number, numTicks: number): number[] {
 
 type DurationLineChartProps = {
   chartTitle: string
-  data: Attempt[]
+  data: Attempt[] | null
   xAxisLabel: string
   yAxisLabel: string
 }
@@ -112,7 +116,13 @@ const DurationLineChart: React.FC<DurationLineChartProps> = ({
 }): ReactElement => {
   //if there's no data return nothing
   if (!data || data.length <= 0) {
-    return <React.Fragment></React.Fragment>
+    return !data ? (
+      <React.Fragment></React.Fragment>
+    ) : (
+      <React.Fragment>
+        <p>No completed runs</p>
+      </React.Fragment>
+    )
   }
 
   //get the domain for the x-axis

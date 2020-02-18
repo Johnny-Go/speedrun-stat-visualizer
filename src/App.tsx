@@ -6,11 +6,12 @@ import FileImportButton from './Components/FileImportButton'
 import TextField from '@material-ui/core/TextField'
 import Grid from '@material-ui/core/Grid'
 import xml2js from 'xml2js'
-import { Attempt } from './types'
+import { Attempt, Segment } from './types'
 import DurationLineChart from './Components/DurationLineChart'
 
 const App: React.FC = (): ReactElement => {
-  const [attemptHistory, setAttemptHistory] = React.useState<Attempt[]>([])
+  const [attemptHistory, setAttemptHistory] = React.useState<Attempt[] | null>(null)
+  const [segmentData, setSegmentData] = React.useState<Segment[]>([])
   const [errorMessage, setErrorMessage] = React.useState<string>()
 
   function handleFile(e: React.ChangeEvent<HTMLInputElement>) {
@@ -26,10 +27,12 @@ const App: React.FC = (): ReactElement => {
 
       if (xml) {
         xml2js
-          .parseStringPromise(xml, { trim: true })
+          .parseStringPromise(xml, { trim: true, mergeAttrs: true })
           .then(function(result: any) {
             const history = parseAttemptHistoryFromFile(result)
+            const segments = parseSegmentsFromFile(result)
             setAttemptHistory(history)
+            setSegmentData(segments)
           })
           .catch(function(err: string) {
             setErrorMessage(err)
@@ -42,14 +45,50 @@ const App: React.FC = (): ReactElement => {
 
   function parseAttemptHistoryFromFile(fileObject: any): Attempt[] {
     const history: Attempt[] = fileObject?.Run?.AttemptHistory?.[0]?.Attempt?.flatMap(
-      ({ $, RealTime }: any) => {
-        return $?.id && RealTime?.[0]
-          ? { x: Number($.id), y: moment.duration(RealTime[0]).as('milliseconds') }
+      ({ id, RealTime }: any) => {
+        return id && RealTime
+          ? { x: Number(id), y: moment.duration(RealTime).as('milliseconds') }
           : []
       }
     )
 
     return history
+  }
+
+  function parseSegmentsFromFile(fileObject: any): Segment[] {
+    const segmentData: Segment[] = fileObject?.Run?.Segments?.[0]?.Segment?.flatMap(
+      ({ Name, SplitTimes, BestSegmentTime, SegmentHistory }: any) => {
+        let name: string | null = null
+        if (Name?.[0]) {
+          name = Name[0]
+        }
+
+        let pbTime: number | null = null
+        if (
+          SplitTimes?.[0]?.SplitTime?.[0]?.name?.[0] === 'Personal Best' &&
+          SplitTimes?.[0]?.SplitTime?.[0]?.RealTime
+        ) {
+          pbTime = moment.duration(SplitTimes[0].SplitTime[0].RealTime).as('milliseconds')
+        }
+
+        let goldSplit: number | null = null
+        if (BestSegmentTime?.[0]?.RealTime) {
+          goldSplit = moment.duration(BestSegmentTime[0].RealTime).as('milliseconds')
+        }
+
+        let history: Attempt[] | null = SegmentHistory?.[0]?.Time?.flatMap(
+          ({ id, RealTime }: any) => {
+            return id && RealTime
+              ? { x: Number(id), y: moment.duration(RealTime).as('milliseconds') }
+              : []
+          }
+        )
+        history = history === undefined ? null : history
+
+        return { name, pbTime, goldSplit, history }
+      }
+    )
+    return segmentData
   }
 
   return (
@@ -88,7 +127,7 @@ const App: React.FC = (): ReactElement => {
         <TextField
           multiline
           style={{ width: '75%' }}
-          value={attemptHistory.map((a: Attempt) => `x:${a.x}, y:${a.y}`).join('\n')}
+          value={attemptHistory?.map((a: Attempt) => `x:${a.x}, y:${a.y}`).join('\n')}
           variant="outlined"
         />
       </header>

@@ -1,6 +1,4 @@
-type Attempt = {
+export type Attempt = {
   x: number
-  y: string
+  y: number
 }
-
-export default Attempt

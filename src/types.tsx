@@ -7,5 +7,5 @@ export type Segment = {
   name: string
   pbTime: number
   goldTime: number
-  SegmentHistory: Attempt[] | null
+  attemptHistory: Attempt[] | null
 }

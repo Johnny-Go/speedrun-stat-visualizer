@@ -33,6 +33,7 @@ const App: React.FC = (): ReactElement => {
             const segments = parseSegmentsFromFile(result)
             setAttemptHistory(history)
             setSegmentData(segments)
+            console.log(segments)
           })
           .catch(function(err: string) {
             setErrorMessage(err)
@@ -47,7 +48,7 @@ const App: React.FC = (): ReactElement => {
     const history: Attempt[] = fileObject?.Run?.AttemptHistory?.[0]?.Attempt?.flatMap(
       ({ id, RealTime }: any) => {
         return id && RealTime
-          ? { x: Number(id), y: moment.duration(RealTime).as('milliseconds') }
+          ? [{ x: Number(id), y: moment.duration(RealTime).as('milliseconds') }]
           : []
       }
     )
@@ -56,16 +57,13 @@ const App: React.FC = (): ReactElement => {
   }
 
   function parseSegmentsFromFile(fileObject: any): Segment[] {
-    const segmentData: Segment[] = fileObject?.Run?.Segments?.[0]?.Segment?.flatMap(
+    const segmentData: Segment[] = fileObject?.Run?.Segments?.[0]?.Segment?.map(
       ({ Name, SplitTimes, BestSegmentTime, SegmentHistory }: any) => {
-        let name: string | null = null
-        if (Name?.[0]) {
-          name = Name[0]
-        }
+        const name: string | null = Name?.[0]
 
         let pbTime: number | null = null
         if (
-          SplitTimes?.[0]?.SplitTime?.[0]?.name?.[0] === 'Personal Best' &&
+          SplitTimes?.[0]?.SplitTime?.[0]?.name?.[0]?.toUpperCase() === 'PERSONAL BEST' &&
           SplitTimes?.[0]?.SplitTime?.[0]?.RealTime
         ) {
           pbTime = moment.duration(SplitTimes[0].SplitTime[0].RealTime).as('milliseconds')
@@ -79,7 +77,7 @@ const App: React.FC = (): ReactElement => {
         let history: Attempt[] | null = SegmentHistory?.[0]?.Time?.flatMap(
           ({ id, RealTime }: any) => {
             return id && RealTime
-              ? { x: Number(id), y: moment.duration(RealTime).as('milliseconds') }
+              ? [{ x: Number(id), y: moment.duration(RealTime).as('milliseconds') }]
               : []
           }
         )
@@ -123,13 +121,6 @@ const App: React.FC = (): ReactElement => {
             />
           </Grid>
         </Grid>
-        <br />
-        <TextField
-          multiline
-          style={{ width: '75%' }}
-          value={attemptHistory?.map((a: Attempt) => `x:${a.x}, y:${a.y}`).join('\n')}
-          variant="outlined"
-        />
       </header>
     </div>
   )

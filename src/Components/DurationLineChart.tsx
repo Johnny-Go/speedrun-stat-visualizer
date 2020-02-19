@@ -113,16 +113,13 @@ const DurationLineChart: React.FC<DurationLineChartProps> = ({
   data,
   xAxisLabel,
   yAxisLabel
-}): ReactElement => {
+}): ReactElement | null => {
   //if there's no data return nothing
-  if (!data || data.length <= 0) {
-    return !data ? (
-      <React.Fragment></React.Fragment>
-    ) : (
-      <React.Fragment>
-        <p>No completed runs</p>
-      </React.Fragment>
-    )
+  if (!data) {
+    return null
+  }
+  if (!data.length) {
+    return <p>No completed runs</p>
   }
 
   //get the domain for the x-axis

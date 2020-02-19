@@ -33,7 +33,6 @@ const App: React.FC = (): ReactElement => {
             const segments = parseSegmentsFromFile(result)
             setAttemptHistory(history)
             setSegmentData(segments)
-            console.log(segments)
           })
           .catch(function(err: string) {
             setErrorMessage(err)
@@ -46,7 +45,7 @@ const App: React.FC = (): ReactElement => {
 
   function parseAttemptHistoryFromFile(fileObject: any): Attempt[] {
     const history: Attempt[] = fileObject?.Run?.AttemptHistory?.[0]?.Attempt?.flatMap(
-      ({ id, RealTime }: any) => {
+      ({ id, RealTime }: any): Attempt[] => {
         return id && RealTime
           ? [{ x: Number(id), y: moment.duration(RealTime).as('milliseconds') }]
           : []
@@ -58,7 +57,7 @@ const App: React.FC = (): ReactElement => {
 
   function parseSegmentsFromFile(fileObject: any): Segment[] {
     const segmentData: Segment[] = fileObject?.Run?.Segments?.[0]?.Segment?.map(
-      ({ Name, SplitTimes, BestSegmentTime, SegmentHistory }: any) => {
+      ({ Name, SplitTimes, BestSegmentTime, SegmentHistory }: any): Segment => {
         const name: string | null = Name?.[0]
 
         let pbTime: number | null = null
@@ -69,13 +68,13 @@ const App: React.FC = (): ReactElement => {
           pbTime = moment.duration(SplitTimes[0].SplitTime[0].RealTime).as('milliseconds')
         }
 
-        let goldSplit: number | null = null
+        let goldTime: number | null = null
         if (BestSegmentTime?.[0]?.RealTime) {
-          goldSplit = moment.duration(BestSegmentTime[0].RealTime).as('milliseconds')
+          goldTime = moment.duration(BestSegmentTime[0].RealTime).as('milliseconds')
         }
 
         let history: Attempt[] | null = SegmentHistory?.[0]?.Time?.flatMap(
-          ({ id, RealTime }: any) => {
+          ({ id, RealTime }: any): Attempt[] => {
             return id && RealTime
               ? [{ x: Number(id), y: moment.duration(RealTime).as('milliseconds') }]
               : []
@@ -83,7 +82,7 @@ const App: React.FC = (): ReactElement => {
         )
         history = history === undefined ? null : history
 
-        return { name, pbTime, goldSplit, history }
+        return { name, pbTime, goldTime, attemptHistory: history }
       }
     )
     return segmentData

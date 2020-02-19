@@ -4,8 +4,8 @@ export type Attempt = {
 }
 
 export type Segment = {
-  name: string
-  pbTime: number
-  goldTime: number
+  name: string | null
+  pbTime: number | null
+  goldTime: number | null
   attemptHistory: Attempt[] | null
 }

@@ -1,5 +1,6 @@
 import React, { ReactElement } from 'react'
 import { Attempt } from '../types'
+import Typography from '@material-ui/core/Typography'
 
 import {
   VictoryAxis,
@@ -119,7 +120,7 @@ const DurationLineChart: React.FC<DurationLineChartProps> = ({
     return null
   }
   if (!data.length) {
-    return <p>No completed runs</p>
+    return <Typography>No completed runs</Typography>
   }
 
   //get the domain for the x-axis

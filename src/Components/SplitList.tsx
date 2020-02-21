@@ -2,7 +2,7 @@ import React, { ReactElement } from 'react'
 import { Segment } from '../types'
 import DurationLineChart from './DurationLineChart'
 
-import { createStyles, makeStyles, Theme } from '@material-ui/core/styles'
+import { makeStyles } from '@material-ui/core/styles'
 import ExpansionPanel from '@material-ui/core/ExpansionPanel'
 import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary'
 import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails'
@@ -12,11 +12,37 @@ type SplitListProps = {
   data: Segment[] | null
 }
 
-const useStyles = makeStyles(() => ({
+const useStylesExpansionPanel = makeStyles(() => ({
   root: {
+    backgroundColor: '#282c34',
+    border: '1px solid rgba(0, 0, 0, .125)',
+    boxShadow: 'none',
+    '&:not(:last-child)': {
+      borderBottom: 0
+    },
+    '&:before': {
+      display: 'none'
+    },
     '&$expanded': {
-      border: '1px solid black',
       margin: 'auto'
+    }
+  },
+  expanded: {}
+}))
+
+const useStylesExpansionPanelSummary = makeStyles(() => ({
+  root: {
+    backgroundColor: '#4e535c',
+    borderBottom: '1px solid rgba(0, 0, 0, .125)',
+    marginBottom: -1,
+    minHeight: 56,
+    '&$expanded': {
+      minHeight: 56
+    }
+  },
+  content: {
+    '&$expanded': {
+      margin: '12px 0'
     }
   },
   expanded: {}
@@ -24,7 +50,8 @@ const useStyles = makeStyles(() => ({
 
 const SplitList: React.FC<SplitListProps> = ({ data }): ReactElement | null => {
   const [expanded, setExpanded] = React.useState<string | false>(false)
-  const classes = useStyles()
+  const classesExpansionPanel = useStylesExpansionPanel()
+  const classesExpansionPanelSummary = useStylesExpansionPanelSummary()
 
   if (!data) {
     return null
@@ -33,11 +60,11 @@ const SplitList: React.FC<SplitListProps> = ({ data }): ReactElement | null => {
     return <Typography>No splits present in file</Typography>
   }
 
-  const handleChange = (panel: string) => (event: React.ChangeEvent<{}>, newExpanded: boolean) => {
-    setExpanded(newExpanded ? panel : false)
+  const handleChange = (panel: string) => (event: React.ChangeEvent<{}>, isExpanded: boolean) => {
+    setExpanded(isExpanded ? panel : false)
   }
 
-  const mappedTags = data?.map(
+  const expansionPanels = data?.map(
     (item: Segment, index: number): ReactElement => {
       const panelId = `${index}-${item.name}`
       return (
@@ -46,9 +73,9 @@ const SplitList: React.FC<SplitListProps> = ({ data }): ReactElement | null => {
           TransitionProps={{ unmountOnExit: true }}
           expanded={expanded === panelId}
           onChange={handleChange(panelId)}
-          classes={classes}
+          classes={classesExpansionPanel}
         >
-          <ExpansionPanelSummary>
+          <ExpansionPanelSummary classes={classesExpansionPanelSummary}>
             <Typography>{item.name}</Typography>
           </ExpansionPanelSummary>
           <ExpansionPanelDetails>
@@ -64,7 +91,7 @@ const SplitList: React.FC<SplitListProps> = ({ data }): ReactElement | null => {
     }
   )
 
-  return <React.Fragment>{mappedTags}</React.Fragment>
+  return <React.Fragment>{expansionPanels}</React.Fragment>
 }
 
 export default SplitList

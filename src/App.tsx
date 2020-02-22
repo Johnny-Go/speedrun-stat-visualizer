@@ -8,10 +8,11 @@ import Grid from '@material-ui/core/Grid'
 import xml2js from 'xml2js'
 import { Attempt, Segment } from './types'
 import DurationLineChart from './Components/DurationLineChart'
+import SplitList from './Components/SplitList'
 
 const App: React.FC = (): ReactElement => {
   const [attemptHistory, setAttemptHistory] = React.useState<Attempt[] | null>(null)
-  const [segmentData, setSegmentData] = React.useState<Segment[]>([])
+  const [segmentData, setSegmentData] = React.useState<Segment[] | null>(null)
   const [errorMessage, setErrorMessage] = React.useState<string>()
 
   function handleFile(e: React.ChangeEvent<HTMLInputElement>) {
@@ -110,8 +111,10 @@ const App: React.FC = (): ReactElement => {
         <TextField multiline style={{ width: '25%' }} value={errorMessage} variant="outlined" />
         <br />
         <Grid container>
-          <Grid item xs={4} style={{ border: '1px solid red' }} />
-          <Grid item xs={8} style={{ border: '1px solid red' }}>
+          <Grid item xs={6} style={{ border: '1px solid red' }}>
+            <SplitList data={segmentData} />
+          </Grid>
+          <Grid item xs={6} style={{ border: '1px solid red' }}>
             <DurationLineChart
               chartTitle="Run Duration over Time"
               data={attemptHistory}
